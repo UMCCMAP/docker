@@ -1,0 +1,13 @@
+version: "3"
+services:
+  cmap_web:
+    container_name: cmap_web
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    volumes:
+      - ./web:/web
+      - ./web/node_modules:/web/node_modules
+    tty: true
