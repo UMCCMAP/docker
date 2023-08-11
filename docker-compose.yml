@@ -1,5 +1,19 @@
 version: "3"
 services:
+  backend:
+    build:
+      context: ./server/cmap
+      dockerfile: Dockerfile
+    container_name: cmap-server
+    ports:
+      - 8080:8080
+    networks:
+      - network-tier
+    depends_on:
+      - mysql
+    restart: on-failure
+    tty: true
+
   cmap_web:
     container_name: cmap_web
     build:
