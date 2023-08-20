@@ -1,6 +1,6 @@
 version: "3"
 services:
-  cmap_server:
+  server:
     build:
       context: ./server/cmap
       dockerfile: Dockerfile
@@ -12,18 +12,39 @@ services:
     restart: on-failure
     tty: true
 
-  cmap_web:
+  web:
     container_name: cmap_web
     build:
       context: ./web
-      dockerfile: Dockerfile.dev
-    ports:
-      - 3000:3000
+      dockerfile: Dockerfile.prod
+    # ports:
+    #   - 3000:3000
     volumes:
       - ./web:/web
-      - /web/node_modules
+      - build_folder:/web/dist
+      - ./web/node_modules/:/web/node_modules
     tty: true
+
+  nginx:
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
+      - build_folder:/var/www/web
+    depends_on:
+      - web
+      - server
+    networks:
+      - network-tier
 
 networks:
   network-tier:
     driver: bridge
+
+volumes:
+  build_folder: null
